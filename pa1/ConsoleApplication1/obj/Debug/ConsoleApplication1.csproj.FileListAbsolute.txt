@@ -1,1 +1,6 @@
 C:\Users\Andrew\Documents\Seattle U\CPSC 5051\PA1\pa1\ConsoleApplication1\bin\Debug\ConsoleApplication1.exe.config
+C:\Users\Andrew\Documents\Seattle U\CPSC 5051\PA1\pa1\ConsoleApplication1\obj\Debug\ConsoleApplication1.csprojResolveAssemblyReference.cache
+C:\Users\Andrew\Documents\Seattle U\CPSC 5051\PA1\pa1\ConsoleApplication1\bin\Debug\ConsoleApplication1.exe
+C:\Users\Andrew\Documents\Seattle U\CPSC 5051\PA1\pa1\ConsoleApplication1\bin\Debug\ConsoleApplication1.pdb
+C:\Users\Andrew\Documents\Seattle U\CPSC 5051\PA1\pa1\ConsoleApplication1\obj\Debug\ConsoleApplication1.exe
+C:\Users\Andrew\Documents\Seattle U\CPSC 5051\PA1\pa1\ConsoleApplication1\obj\Debug\ConsoleApplication1.pdb

@@ -19,13 +19,16 @@ namespace ConsoleApplication1
     private int shiftValue; // amount by which encrypted words are shifted
     private int maxGuesses; // max number of guesses allowed
     private List<int> guessHistory; // record of guessed shift values
-    private bool isOn; 
+    private bool isOn;
+    private Random r;
     private const int defaultGuesses = 10;
     private const string validChars = "abcdefghijklmnopqrstuvwxyz /t/n";
 
     public encryptWord(Random r)
     {
-      shiftValue = r.Next(0, 26);
+      this.r = r;
+      shiftValue = this.r.Next(0, 26);
+      Console.WriteLine("Shift value = " + shiftValue);
       maxGuesses = defaultGuesses;
       guessHistory = new List<int>();
       isOn = true;
@@ -33,7 +36,8 @@ namespace ConsoleApplication1
 
     public encryptWord(Random r, int maxGuesses)
     {
-      shiftValue = r.Next(0, 26);
+      this.r = r;
+      shiftValue = this.r.Next(0, 26);
       this.maxGuesses = maxGuesses;
       guessHistory = new List<int>();
       isOn = true;
@@ -54,16 +58,16 @@ namespace ConsoleApplication1
                                       "or non whitespace character.");
         int nextChar = (int)word[i] + shiftValue;
         // if current char is upper case
-        if ((word[i] >= 65 || word[i] <= 90) && nextChar > 90)
+        if ((word[i] >= 65 && word[i] <= 90) && nextChar > 90)
         {
           nextChar = ((nextChar - 65) % 26) + 65;
         }
         // if current char is lower case
-        if ((word[i] >= 97 || word[i] <= 122) && nextChar > 122)
+        if ((word[i] >= 97 && word[i] <= 122) && nextChar > 122)
         {
           nextChar = ((nextChar - 97) % 26) + 97;
         }
-        result += nextChar;
+        result += (char)nextChar;
       }
       return result;
     }
@@ -94,6 +98,20 @@ namespace ConsoleApplication1
       }
     }
 
+    public void reset()
+    {
+      Console.WriteLine("Shift value is reset and guess"
+                        + "history has been cleared.");
+      shiftValue = r.Next(0, 26);
+      guessHistory.Clear();
+      isOn = true;
+    }
+
+    public bool getIsOn()
+    {
+      return isOn;
+    }
+
     // ASSUMES stats are only printed after a correct guess
     private void printStats()
     {
@@ -101,8 +119,53 @@ namespace ConsoleApplication1
       double mean = 0.0;
       foreach (int n in guessHistory)
       {
-        // left off here
-        // finish later
+        if (n < min) min = n;
+        if (n > max) max = n;
+        mean += (double)n;
+      }
+      mean /= (double)guessHistory.Count();
+      Console.WriteLine("Guess statistics:");
+      Console.WriteLine("Minimum  -  " + min);
+      Console.WriteLine("Maximum  -  " + max);
+      Console.WriteLine("Mean     -  " + String.Format("{0:0.00}", mean));
+    }
+  }
+
+  public class Program
+  {
+    public static void Main()
+    {
+      Random r = new Random();
+      encryptWord encrypt = new encryptWord(r);
+      string word, result;
+      while (encrypt.getIsOn())
+      {
+        Console.Write("\nEnter a word to encrypt: ");
+        word = Console.ReadLine();
+        try
+        {
+          result = encrypt.encrypt(word);
+        }
+        catch (ArgumentException exception)
+        {
+          Console.WriteLine(exception.Message);
+          continue;
+        }
+        Console.WriteLine("\nEncrypted word: " + result);
+        Console.Write("Guess shift value? (enter -1 for no guess)");
+        int shift = Int32.Parse(Console.ReadLine());
+        if (shift >= 0)
+        {
+          try
+          {
+            encrypt.guess(shift);
+          }
+          catch (Exception exception)
+          {
+            Console.WriteLine(exception.Message);
+            continue;
+          }
+        }
       }
     }
   }
