@@ -43,27 +43,30 @@ namespace ConsoleApplication1
       isOn = true;
     }
 
-    // ASSUMES only alphabetic and whitespace characters are valid
+    // ASSUMES only alphabetic characters should be encoded
     // throws an ArgumentException
     // throws an exception if the object is off
     public string encrypt(string word)
     {
       if (!isOn)
         throw new Exception("Object is off, reset to try again.");
+      if (word.Length < 4)
+        throw new Exception("Given string must be 4 chars long or more.")
       string result = "";
       for (int i = 0; i < word.Length; i++)
       {
-        if (!validChars.Contains(Char.ToLower(word[i])))
-          throw new ArgumentException("String contains a non-alphabetic " +
-                                      "or non whitespace character.");
-        int nextChar = (int)word[i] + shiftValue;
+        int nextChar = (int)word[i];
+        if (word[i] >= 65 && word[i] <= 122) // only shift if char is alphabetic
+        {
+          nextChar += shiftValue;
+        }
         // if current char is upper case
-        if ((word[i] >= 65 && word[i] <= 90) && nextChar > 90)
+        if (word[i] <= 90 && nextChar > 90)
         {
           nextChar = ((nextChar - 65) % 26) + 65;
         }
         // if current char is lower case
-        if ((word[i] >= 97 && word[i] <= 122) && nextChar > 122)
+        if (word[i] >= 97 && nextChar > 122)
         {
           nextChar = ((nextChar - 97) % 26) + 97;
         }
@@ -87,7 +90,10 @@ namespace ConsoleApplication1
       else
       {
         guessHistory.Add(guess);
-        Console.WriteLine("Sorry, your guess was incorrect.");
+        if (guess < shiftValue)
+          Console.WriteLine("Sorry, your guess was too low.");
+        else
+          Console.WriteLine("Sorry, your guess was too high.");
         if (guessHistory.Count() == maxGuesses)
         {
           Console.WriteLine("You have reached the maximum number of guesses.");
@@ -136,24 +142,22 @@ namespace ConsoleApplication1
     public static void Main()
     {
       Random r = new Random();
-      encryptWord encrypt = new encryptWord(r);
+      encryptWord encrypt = new encryptWord(r, 2);
       string word, result;
       while (encrypt.getIsOn())
       {
-        Console.Write("\nEnter a word to encrypt: ");
+        Console.Write("Enter a word to encrypt: ");
         word = Console.ReadLine();
-        try
+        result = encrypt.encrypt(word);
+        Console.WriteLine("Encrypted word:  " + result);
+        Console.Write("\nGuess shift value? (enter -1 for no guess)  ");
+        int shift;
+        if (!int.TryParse(Console.ReadLine(), out shift))
         {
-          result = encrypt.encrypt(word);
-        }
-        catch (ArgumentException exception)
-        {
-          Console.WriteLine(exception.Message);
+          Console.WriteLine("Your guess was not a number.");
           continue;
         }
-        Console.WriteLine("\nEncrypted word: " + result);
-        Console.Write("Guess shift value? (enter -1 for no guess)");
-        int shift = Int32.Parse(Console.ReadLine());
+        Console.WriteLine();
         if (shift >= 0)
         {
           try
@@ -167,6 +171,8 @@ namespace ConsoleApplication1
           }
         }
       }
+      Console.WriteLine("Press enter to close:");
+      Console.ReadLine();
     }
   }
 }
